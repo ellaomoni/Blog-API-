@@ -1,13 +1,19 @@
 require('dotenv').config();
 const express= require('express');
 const app = express();
+const  errorHandler = require('./middlewares/errorHandler')
 
 
 const connectDB = require('./config/db');
 
-app.get('/' , (req,res) => {
-    res.send('Server is connected');
-});
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(errorHandler);
+
+
+const userRoutes = require('./routes/userRoutes');
+
+app.use("/api/v1/users", userRoutes);
 
 const PORT = process.env.PORT || 8000;
 
