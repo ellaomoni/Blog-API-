@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const authMiddleware = (req, res, next) => {
+const User = require('../models/user');
+const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer')) {
@@ -20,4 +21,21 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware; 
+
+ const isAdmin = async (req, res, next) => {
+        try{
+            const user = await User.findByid(req.user.id);
+            if(!user){
+                return res.status(404).json({message: 'User not found'});
+            }
+            if(user.role !== 'admin'){
+                return res.status(403).json({message: ' Access Denied. You are not authorized to access this route'});
+            }
+            next();
+        }catch(error){
+            return res.status(500).json({message: 'Internal server error', error: error.message});
+        }
+ }
+
+module.exports = {verifyToken, isAdmin};
+

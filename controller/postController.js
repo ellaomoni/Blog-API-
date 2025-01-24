@@ -21,7 +21,7 @@ const createPost = async (req, res) => {
     }
 };
 
-const getPost = async (req, res) => {
+const getPosts = async (req, res) => {
     try{
         const post = await Post.find().popular('author', 'name email');
         res.status(200).json(posts);
@@ -80,4 +80,4 @@ const deletePost = async (req, res) => {
   }
 };
 
-module.exports = {createPost, getPost, getPostbyId, updatePost, deletePost};
+module.exports = {createPost, getPosts, getPostbyId, updatePost, deletePost};
