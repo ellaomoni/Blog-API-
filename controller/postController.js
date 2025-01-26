@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const paginateAndSearch = require('../utils/page&search')
 
 
 const createPost = async (req, res) => {
@@ -22,11 +23,21 @@ const createPost = async (req, res) => {
 };
 
 const getPosts = async (req, res) => {
-    try{
-        const post = await Post.find().popular('author', 'name email');
-        res.status(200).json(posts);
-    } catch(error) {
-        res.status(500).json({message: 'Internal server error', error: error.message});
+    try {
+        // Extract query parameters with defaults
+        const { search = '', page = 1, limit = 10 } = req.query;
+
+        // Call the pagination and search utility function
+        const { results, pagination } = await paginateAndSearch(Post, search, page, limit, 'title');
+
+        // Respond with the posts and pagination metadata
+        res.status(200).json({
+            message: 'Posts fetched successfully',
+            posts: results,
+            pagination,
+        });
+    } catch (error) {``
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
